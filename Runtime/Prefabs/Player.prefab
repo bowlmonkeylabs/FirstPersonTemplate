@@ -1137,6 +1137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 845912246204012510}
+  - component: {fileID: 2143183583}
   m_Layer: 8
   m_Name: Weapon (sway root)
   m_TagString: Untagged
@@ -1159,6 +1160,70 @@ Transform:
   m_Father: {fileID: 8222754497619822083}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2143183583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2816128299422965013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a64461596f9453795d2d443908f06d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _moveInput:
+    UseConstant: 0
+    EnableInstanceOptions: 0
+    InstanceName: '{I} '
+    InstancePath: IntermediateProperties
+    ConstantValue: {x: 0, y: 0}
+    Variable: {fileID: 11400000, guid: db5ecf9b23275a245a5d26a10b930371, type: 2}
+  _mouseInput:
+    UseConstant: 0
+    EnableInstanceOptions: 0
+    InstanceName: '{I} '
+    InstancePath: IntermediateProperties
+    ConstantValue: {x: 0, y: 0}
+    Variable: {fileID: 11400000, guid: 98efafebd9eea82498240882e80749a1, type: 2}
+  _currentVelocity:
+    UseConstant: 0
+    EnableInstanceOptions: 0
+    InstanceName: '{I} '
+    InstancePath: IntermediateProperties
+    ConstantValue: {x: 0, y: 0, z: 0}
+    Variable: {fileID: 11400000, guid: bc396ccae3752274096b5fcf06c23b39, type: 2}
+  _isGrounded:
+    UseConstant: 0
+    EnableInstanceOptions: 0
+    InstanceName: '{I} '
+    InstancePath: IntermediateProperties
+    ConstantValue: 0
+    Variable: {fileID: 11400000, guid: 2032b4e06661ef44eab94b55a0e1e71b, type: 2}
+  _sway: 1
+  _swayRotation: 1
+  _bobOffset: 1
+  _bobSway: 1
+  _fallOffset: 1
+  _fallRotation: 1
+  _positionOffsetLimit: 0.1
+  _rotationAngleLimitX: 60
+  _step: 0.05
+  _maxStepDistance: 0.6
+  _rotationStep: 4
+  _maxRotationStep: 5
+  _speedCurve: 1197.2684
+  _speedMultiplier: 1.8
+  _idleMultiplier: 0.25
+  _bobPhaseOffset: 0
+  _travelLimit: {x: 0.1, y: 0.025, z: 0.1}
+  _bobLimit: {x: 0.1, y: 0.1, z: 0.1}
+  _bobMultiplier: {x: 1, y: 1, z: 1}
+  _travelLimitFall: {x: 0.01, y: 0.01, z: 0.01}
+  _fallMultiplier: 1
+  rotX: 1
+  rotY: 1
+  rotZ: 1
 --- !u!1 &3000421303040119516
 GameObject:
   m_ObjectHideFlags: 0
@@ -1910,7 +1975,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4208265320490978093
 Transform:
   m_ObjectHideFlags: 0
@@ -1955,17 +2020,17 @@ MonoBehaviour:
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
-  m_ActionsAsset: {fileID: -944628639613478452, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_PointAction: {fileID: -9120158073422320316, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_MoveAction: {fileID: 3710738434707379630, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_SubmitAction: {fileID: 2064916234097673511, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_CancelAction: {fileID: -1967631576421560919, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_LeftClickAction: {fileID: -6745019240869512132, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_MiddleClickAction: {fileID: 3279352641294131588, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_RightClickAction: {fileID: -7772487283596792352, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_ScrollWheelAction: {fileID: -4950278455131685041, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_TrackedDevicePositionAction: {fileID: 3506654260451525277, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
-  m_TrackedDeviceOrientationAction: {fileID: 642709029856841603, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_PointAction: {fileID: -9120158073422320316, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_MoveAction: {fileID: 5613614185135771730, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_SubmitAction: {fileID: 5278480284063373710, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_CancelAction: {fileID: -1652949167470907362, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_LeftClickAction: {fileID: -6745019240869512132, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_MiddleClickAction: {fileID: 3622574154735180180, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_RightClickAction: {fileID: -7772487283596792352, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_ScrollWheelAction: {fileID: -4950278455131685041, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_TrackedDevicePositionAction: {fileID: 3506654260451525277, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 642709029856841603, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
 --- !u!1 &6161779211433607112
@@ -2200,7 +2265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: -944628639613478452, guid: 51be94397a8b7184b8f439212be4a3d6, type: 3}
+  m_Actions: {fileID: -944628639613478452, guid: 32e0dd6923972484a94a79b2d934e5a7, type: 3}
   m_NotificationBehavior: 0
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
@@ -2479,13 +2544,23 @@ MonoBehaviour:
     ConstantValue: 0
     Variable: {fileID: 11400000, guid: 8d5d42c000ab17f42aec68e64f2aa6ea, type: 2}
   _caffeineTimer:
-    UseConstant: 0
-    ConstantDuration: 0
-    Variable: {fileID: 11400000, guid: a3dd3f38b72f0114aa73e0621f2451b1, type: 2}
+    _useConstant: 0
+    _constantDuration:
+      ReferenceTypeSelector: 0
+      ConstantValue: 0
+      ReferenceValue_FloatVariable: {fileID: 0}
+      ReferenceValue_IntVariable: {fileID: 0}
+      ReferenceValue_EvaluateCurveVariable: {fileID: 0}
+    _variable: {fileID: 11400000, guid: a3dd3f38b72f0114aa73e0621f2451b1, type: 2}
   _caffeineCooldownTimer:
-    UseConstant: 0
-    ConstantDuration: 0
-    Variable: {fileID: 11400000, guid: 123e98a7e57c81441b01bf9615a890a7, type: 2}
+    _useConstant: 0
+    _constantDuration:
+      ReferenceTypeSelector: 0
+      ConstantValue: 0
+      ReferenceValue_FloatVariable: {fileID: 0}
+      ReferenceValue_IntVariable: {fileID: 0}
+      ReferenceValue_EvaluateCurveVariable: {fileID: 0}
+    _variable: {fileID: 11400000, guid: 123e98a7e57c81441b01bf9615a890a7, type: 2}
   _outputShowCaffeineAvailable:
     UseConstant: 0
     EnableInstanceOptions: 0

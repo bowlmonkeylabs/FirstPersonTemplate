@@ -125,8 +125,8 @@ namespace Player
         {
             if (_isCaffeineUnlocked.Value
                 && !_isCaffeinated.Value 
-                && (!_caffeineTimer.HasStarted || _caffeineTimer.IsFinished)
-                && (!_caffeineCooldownTimer.HasStarted || _caffeineCooldownTimer.IsFinished))
+                && (!_caffeineTimer.IsStarted || _caffeineTimer.IsFinished)
+                && (!_caffeineCooldownTimer.IsStarted || _caffeineCooldownTimer.IsFinished))
             {
                 _isCaffeinated.Value = true;
                 
@@ -150,8 +150,8 @@ namespace Player
         {
             _outputShowCaffeineAvailable.Value =
                 _isCaffeinated.Value || (
-                    (!_caffeineCooldownTimer.HasStarted || _caffeineCooldownTimer.IsFinished) 
-                    && (!_caffeineTimer.HasStarted || _caffeineTimer.IsFinished));
+                    (!_caffeineCooldownTimer.IsStarted || _caffeineCooldownTimer.IsFinished) 
+                    && (!_caffeineTimer.IsStarted || _caffeineTimer.IsFinished));
         }
 
         #endregion

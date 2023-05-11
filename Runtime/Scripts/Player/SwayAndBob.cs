@@ -27,8 +27,8 @@ namespace BML.Scripts.Player
         [SerializeField, SuffixLabel("degrees")] private float _rotationAngleLimitX = 60f;
         
         [Header("Sway")]
-        [SerializeField] private float _step = 0.01f;
-        [SerializeField] private float _maxStepDistance = 0.06f;
+        [SerializeField] private float _step = 0.05f;
+        [SerializeField] private float _maxStepDistance = 0.6f;
         private Vector3 swayPos;
         
         [Header("SwayRotation")]
@@ -38,17 +38,16 @@ namespace BML.Scripts.Player
 
         [Header("Bobbing")] 
         [SerializeField] private float _speedCurve;
-        [SerializeField] private float _speedMultiplier = 1f;
-        [SerializeField] private float _idleMultiplier;
-        [FormerlySerializedAs("_bobPhaseOffsetX")]
+        [SerializeField] private float _speedMultiplier = 1.8f;
+        [SerializeField] private float _idleMultiplier = .25f;
         [Tooltip("Probably this set to some value to offset left-hand items from right hand")]
         [SerializeField] [Range(0f, 360f)] private float _bobPhaseOffset;
-        
-        [Tooltip("Maximum limits of travel from move input")]
-        [SerializeField] private Vector3 _travelLimit = Vector3.one * 0.025f;
-        
-        [Tooltip("Maximum limits of travel from bobbing over time")]
-        [SerializeField] private Vector3 _bobLimit = Vector3.one * 0.01f;
+
+        [Tooltip("Maximum limits of travel from move input")] [SerializeField]
+        private Vector3 _travelLimit = new Vector3(0.1f, 0.025f, 0.1f);
+
+        [Tooltip("Maximum limits of travel from bobbing over time")] [SerializeField]
+        private Vector3 _bobLimit = new Vector3(0.01f, 0.01f, 0.01f);
         
         private Vector3 bobPosition;
         private float curveSin { get => Mathf.Sin((_speedCurve)); }
@@ -58,17 +57,17 @@ namespace BML.Scripts.Player
         private Quaternion originalRotation;
 
         [Header("BobRotation")]
-        [SerializeField] private Vector3 _bobMultiplier;
+        [SerializeField] private Vector3 _bobMultiplier = new Vector3(1f, 1f, 1f);
 
         private Vector3 bobEulerRot;
         
         [Header("FallOffset")]
-        [SerializeField] private Vector3 _travelLimitFall = Vector3.one * 0.1f;
+        [SerializeField] private Vector3 _travelLimitFall = Vector3.one * 0.01f;
         private Vector3 fallPosition;
 
         
         [Header("FallRotation")]
-        [SerializeField] private float _fallMultiplier;
+        [SerializeField] private float _fallMultiplier = 1f;
         private Vector3 fallEulerRot;
 
         private void OnEnable()
