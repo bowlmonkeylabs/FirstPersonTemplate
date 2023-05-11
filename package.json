@@ -1,0 +1,12 @@
+{
+  "name": "com.bml.firstpersontemplate",
+  "version": "1.0.0",
+  "displayName": "First Person Template",
+  "description": "A template for first person games with a first person player prefab",
+  "unity": "2020.3",
+  "author": {
+	  "name": "BowlMonkeyLabs",
+	  "email": "bowlmonkeylabs@gmail.com",
+	  "url": ""
+  }
+}
