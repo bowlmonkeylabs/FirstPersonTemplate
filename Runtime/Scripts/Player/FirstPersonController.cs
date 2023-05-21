@@ -1,4 +1,6 @@
 ﻿using BML.ScriptableObjectCore.Scripts.Variables;
+using BML.Scripts.Utils;
+using KinematicCharacterController;
 using MoreMountains.Feedbacks;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -6,7 +8,7 @@ using UnityEngine.InputSystem;
 
 namespace Player
 {
-    public class FirstPersonController : MonoBehaviour
+    public class FirstPersonController : MonoBehaviour, ICharacterController
     {
 	    [Tooltip("Move speed of the character in m/s")]
         [SerializeField, FoldoutGroup("Player")] protected float _moveSpeed = 4.0f;
@@ -39,9 +41,7 @@ namespace Player
 		[SerializeField, FoldoutGroup("Grounded")] protected float _groundedOffset = -0.14f;
 		[Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
 		[SerializeField, FoldoutGroup("Grounded")] protected float _groundedRadius = 0.5f;
-		[Tooltip("What layers the character uses as ground")]
-		[SerializeField, FoldoutGroup("Grounded")] protected LayerMask _groundLayers;
-		
+
 		[SerializeField, FoldoutGroup("Caffeine")] protected float _caffeineMoveSpeedMultiplier;
 		[SerializeField, FoldoutGroup("Caffeine")] protected BoolReference _isCaffeinated;
 
@@ -60,6 +60,7 @@ namespace Player
 
 		// cinemachine
 		protected float _cinemachineTargetPitch;
+		protected float _cinemachineTargetYaw;
 
 		// player
 		protected float _speed;
@@ -73,7 +74,7 @@ namespace Player
 
 	
 		protected PlayerInput _playerInput;
-		protected CharacterController _controller;
+		protected KinematicCharacterMotor _motor;
 		protected PlayerInputProcessor _input;
 		protected GameObject _mainCamera;
 		protected float previouRotSpeed = 0f;
@@ -87,6 +88,8 @@ namespace Player
 			
 		}
 
+		#region Unity Lifecycle
+
 		protected virtual void Awake()
 		{
 			// get a reference to our main camera
@@ -95,7 +98,8 @@ namespace Player
 				_mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
 			}
 			
-			_controller = GetComponent<CharacterController>();
+			_motor = GetComponent<KinematicCharacterMotor>();
+			_motor.CharacterController = this;
 			_input = GetComponent<PlayerInputProcessor>();
 			_playerInput = GetComponent<PlayerInput>();
 		}
@@ -114,10 +118,6 @@ namespace Player
 			
 			JumpAndGravity();
 			GroundedCheck();
-			Move();
-
-			_outputCurrentVelocity.Value = _controller.velocity;
-			_outputIsGrounded.Value = _controller.isGrounded;
 		}
 
 		protected virtual void LateUpdate()
@@ -128,11 +128,129 @@ namespace Player
 			CameraRotation();
 		}
 
-		protected virtual void GroundedCheck()
+		#endregion
+		
+			#region Kinematic Character Controller
+
+		public void BeforeCharacterUpdate(float deltaTime)
+	    {
+	        // This is called before the motor does anything
+	        JumpAndGravity();
+	        GroundedCheck();
+	    }
+
+	    public void UpdateRotation(ref Quaternion currentRotation, float deltaTime)
+	    {
+		    
+	    }
+
+	    public void UpdateVelocity(ref Vector3 currentVelocity, float deltaTime)
+	    {
+		    _outputCurrentVelocity.Value = currentVelocity;
+		    
+		    // Kill Y velocity if just get grounded so not to slide
+		    // Without this, y velocity is converted to horizontal velocity when land
+		    if (_motor.GroundingStatus.IsStableOnGround && !_motor.LastGroundingStatus.IsStableOnGround)
+		    {
+			    currentVelocity = Vector3.ProjectOnPlane(currentVelocity, _motor.CharacterUp);
+			    currentVelocity = _motor.GetDirectionTangentToSurface(currentVelocity,
+				    _motor.GroundingStatus.GroundNormal) * currentVelocity.magnitude;
+		    }
+		    
+		    sprinting = _input.sprint;
+
+		    // set target speed based on move speed, sprint speed and if sprint is pressed
+		    float targetSpeed = sprinting ? _sprintSpeed : _moveSpeed;
+		    targetSpeed *= _isCaffeinated.Value ? _caffeineMoveSpeedMultiplier : 1f;
+
+		    // a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
+
+            // note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
+            // if there is no input, set the target speed to 0
+            if (_input.move == Vector2.zero) targetSpeed = 0.0f;
+
+            // a reference to the players current horizontal velocity
+            float currentHorizontalSpeed = currentVelocity.xoz().magnitude;
+
+            float speedOffset = 0.1f;
+            float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+
+            // accelerate or decelerate to target speed
+            if (currentHorizontalSpeed < targetSpeed - speedOffset ||
+                currentHorizontalSpeed > targetSpeed + speedOffset)
+            {
+                // creates curved result rather than a linear one giving a more organic speed change
+                // note T in Lerp is clamped, so we don't need to clamp our speed
+                _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+                    Time.deltaTime * _speedChangeRate);
+
+                // round speed to 3 decimal places
+                _speed = Mathf.Round(_speed * 1000f) / 1000f;
+            }
+            else
+            {
+                _speed = targetSpeed;
+            }
+
+            Vector3 inputDirection = (_input.move.y * _mainCamera.transform.forward.xoz().normalized + _input.move.x *
+	            _mainCamera.transform.right.xoz().normalized).normalized;
+            
+
+		    Vector3 horizontalVelocity = inputDirection * _speed;
+
+		    // move the player
+		    currentVelocity = horizontalVelocity +
+		                      new Vector3(0.0f, _verticalVelocity, 0.0f);
+	    }
+
+	    public void AfterCharacterUpdate(float deltaTime)
+	    {
+		    // This is called after the motor has finished everything in its update
+	    }
+
+	    public bool IsColliderValidForCollisions(Collider coll)
+	    {
+	        // This is called after when the motor wants to know if the collider can be collided with (or if we just go through it)
+	        return true;
+	    }
+
+	    public void OnGroundHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint,
+	        ref HitStabilityReport hitStabilityReport)
+	    {
+	        // This is called when the motor's ground probing detects a ground hit
+	    }
+
+	    public void OnMovementHit(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint,
+	        ref HitStabilityReport hitStabilityReport)
+	    {
+            // This is called when the motor's movement logic detects a hit
+	    }
+
+	    public void ProcessHitStabilityReport(Collider hitCollider, Vector3 hitNormal, Vector3 hitPoint,
+	        Vector3 atCharacterPosition, Quaternion atCharacterRotation, ref HitStabilityReport hitStabilityReport)
+	    {
+	        // This is called after every hit detected in the motor, to give you a chance to modify the HitStabilityReport any way you want
+	    }
+
+	    public void PostGroundingUpdate(float deltaTime)
+	    {
+	        // This is called after the motor has finished its ground probing, but before PhysicsMover/Velocity/etc.... handling
+	    }
+
+	    public void OnDiscreteCollisionDetected(Collider hitCollider)
+	    {
+	        // This is called by the motor when it is detecting a collision that did not result from a "movement hit".
+	    }
+
+		#endregion
+
+		protected void GroundedCheck()
 		{
-			// set sphere position, with offset
-			Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - _groundedOffset, transform.position.z);
-			_grounded = Physics.CheckSphere(spherePosition, _groundedRadius, _groundLayers, QueryTriggerInteraction.Ignore);
+			_grounded = _motor.GroundingStatus.FoundAnyGround;
+
+			//Only update when changed
+			if (_outputIsGrounded.Value != _grounded)
+				_outputIsGrounded.Value = _grounded;
 		}
 
 		protected virtual void CameraRotation()
@@ -181,68 +299,15 @@ namespace Player
 				previouRotSpeed = 0f;
 				
 			
-			_rotationVelocity = _input.look.x * rotSpeed * deltaTimeMultiplier;
+			_cinemachineTargetYaw += _input.look.x * rotSpeed * deltaTimeMultiplier;
 			_cinemachineTargetPitch += _input.look.y * rotSpeed * deltaTimeMultiplier;
 			
 
 			// clamp our pitch rotation
 			_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, _bottomClamp, _topClamp);
 
-			// Update Cinemachine camera target pitch
-			_cinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, 0.0f, 0.0f);
-			
-			// rotate the player left and right
-			transform.Rotate(Vector3.up * _rotationVelocity);
-		}
-
-		protected virtual void Move()
-		{
-			sprinting = _input.sprint;
-
-			// set target speed based on move speed, sprint speed and if sprint is pressed
-			float targetSpeed = sprinting ? _sprintSpeed : _moveSpeed;
-			targetSpeed *= _isCaffeinated.Value ? _caffeineMoveSpeedMultiplier : 1f;
-
-				// a simplistic acceleration and deceleration designed to be easy to remove, replace, or iterate upon
-
-			// note: Vector2's == operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-			// if there is no input, set the target speed to 0
-			if (_input.move == Vector2.zero) targetSpeed = 0.0f;
-
-			// a reference to the players current horizontal velocity
-			float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
-
-			float speedOffset = 0.1f;
-			float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
-
-			// accelerate or decelerate to target speed
-			if (currentHorizontalSpeed < targetSpeed - speedOffset || currentHorizontalSpeed > targetSpeed + speedOffset)
-			{
-				// creates curved result rather than a linear one giving a more organic speed change
-				// note T in Lerp is clamped, so we don't need to clamp our speed
-				_speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude, Time.deltaTime * _speedChangeRate);
-
-				// round speed to 3 decimal places
-				_speed = Mathf.Round(_speed * 1000f) / 1000f;
-			}
-			else
-			{
-				_speed = targetSpeed;
-			}
-
-			// normalise input direction
-			Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
-
-			// note: Vector2's != operator uses approximation so is not floating point error prone, and is cheaper than magnitude
-			// if there is a move input rotate player when the player is moving
-			if (_input.move != Vector2.zero)
-			{
-				// move
-				inputDirection = transform.right * _input.move.x + transform.forward * _input.move.y;
-			}
-
-			// move the player
-			_controller.Move(inputDirection.normalized * (_speed * Time.deltaTime) + new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+			// Update Cinemachine camera target pitch and yaw
+			_cinemachineCameraTarget.transform.localRotation = Quaternion.Euler(_cinemachineTargetPitch, _cinemachineTargetYaw, 0.0f);
 		}
 
 		protected virtual void JumpAndGravity()
@@ -262,6 +327,7 @@ namespace Player
 				if (_input.jump && _jumpTimeoutDelta <= 0.0f)
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
+					_motor.ForceUnground();
 					_verticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
 				}
 
