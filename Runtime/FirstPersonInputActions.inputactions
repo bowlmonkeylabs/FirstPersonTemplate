@@ -53,8 +53,26 @@
                 {
                     "name": "Sprint",
                     "type": "PassThrough",
-                    "id": "dd92c4bf-1def-4f36-8a7d-09084c029047",
+                    "id": "19410486-c431-4186-9cc8-1df1714f1bea",
                     "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Primary",
+                    "type": "Value",
+                    "id": "66f25b1e-7bc4-49fa-939b-5420eb8d7c79",
+                    "expectedControlType": "Digital",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Secondary",
+                    "type": "Value",
+                    "id": "dd881bef-d46b-46e6-80e5-9ad6494ec280",
+                    "expectedControlType": "Digital",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -289,6 +307,72 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "UseCaffeine",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c17e0511-ef26-463a-959d-e844e26fc8f3",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Primary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d13cb2bd-6743-42ba-860a-fb9f5e7f6bfc",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Primary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fdc0dd74-205a-461a-8c87-06441a7271a9",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Secondary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "44534177-121b-4e9b-ac61-656eb3d06ee9",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Secondary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "90b1beef-6fa4-4e27-a87a-a9f6d6063db9",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "191151ca-feae-44cf-bc96-f326ff00bf84",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

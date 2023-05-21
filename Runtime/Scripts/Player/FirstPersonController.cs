@@ -55,8 +55,7 @@ namespace Player
 		[SerializeField, FoldoutGroup("Output")] protected Vector3Variable _outputCurrentVelocity;
 		[SerializeField, FoldoutGroup("Output")] protected BoolVariable _outputIsGrounded;
 		
-		[SerializeField, FoldoutGroup("Feedbacks")] protected MMF_Player SprintStartFeedback;
-		[SerializeField, FoldoutGroup("Feedbacks")] protected MMF_Player SprintStopFeedback;
+		[SerializeField, FoldoutGroup("Feedbacks")] protected MMF_Player JumpFeedback;
 
 		// cinemachine
 		protected float _cinemachineTargetPitch;
@@ -64,7 +63,6 @@ namespace Player
 
 		// player
 		protected float _speed;
-		protected float _rotationVelocity;
 		protected float _verticalVelocity;
 		protected float _terminalVelocity = 53.0f;
 
@@ -79,9 +77,7 @@ namespace Player
 		protected GameObject _mainCamera;
 		protected float previouRotSpeed = 0f;
 		protected bool sprinting = false;
-
-		protected const float _threshold = 0.01f;
-
+		
 		protected virtual bool IsCurrentDeviceMouse
 		{
 			get => _playerInput.currentControlScheme == "Keyboard&Mouse";
@@ -328,6 +324,7 @@ namespace Player
 				{
 					// the square root of H * -2 * G = how much velocity needed to reach desired height
 					_motor.ForceUnground();
+					JumpFeedback.PlayFeedbacks();
 					_verticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
 				}
 
