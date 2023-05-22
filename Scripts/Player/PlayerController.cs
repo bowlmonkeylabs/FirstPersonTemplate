@@ -67,7 +67,6 @@ namespace Player
 
         protected virtual void OnPrimary(InputValue value)
         {
-            Debug.Log($"Interact: {value}");
             if (_isPlayerInputDisabled.Value) return;
             if (!value.isPressed) return;
             
