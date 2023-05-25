@@ -33,6 +33,9 @@ namespace Player
 	        get => playerInput.currentControlScheme == "Keyboard&Mouse";
         }
 
+	    [ShowInInspector]
+        public string CurrentActionMap => playerInput?.currentActionMap?.name;
+
         #region Unity lifecycle
 
         protected virtual void OnEnable()
@@ -76,10 +79,10 @@ namespace Player
 
         public virtual void OnPause(InputValue value)
         {
+	        Debug.Log("OnPause");
 	        if (isPaused != null)
 	        {
 		        isPaused.Value = !isPaused.Value;
-		        UpdateInputState();
 	        }
         }
 
@@ -121,6 +124,7 @@ namespace Player
         protected virtual void UpdateInputState()
         {
 	        SetCursorState(!isPaused.Value);
+	        Debug.Log($"UpdateInputState {(isPaused.Value ? "UI" : "Player")}");
 	        playerInput.SwitchCurrentActionMap(isPaused.Value ? "UI" : "Player");
 	        Time.timeScale = (isPaused.Value ? 0f : 1f);
         }
